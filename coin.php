@@ -5,7 +5,7 @@ $coinId = isset($_GET['id']) ? preg_replace('/[^a-z0-9\\-]/i', '', $_GET['id']) 
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
+//halooo
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
