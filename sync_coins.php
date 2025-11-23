@@ -1,9 +1,9 @@
 <?php
-// sync_coins.php
+// sync_coins.php - cron-friendly, auto-retry, logging
 include 'connection.php';
-set_time_limit(120); // biar tidak timeout
+set_time_limit(120);
 
-$logFile = __DIR__ . "/sync_log.txt"; // log file di folder yang sama
+$logFile = __DIR__ . "/sync_log.txt"; // log di folder proyek
 
 function logMessage($msg) {
     global $logFile;
@@ -11,10 +11,9 @@ function logMessage($msg) {
     file_put_contents($logFile, "[$time] $msg\n", FILE_APPEND);
 }
 
-// URL API CoinGecko
-$apiUrl = "http://localhost/ArtaCrypto_Web/get_coins.php"; // ganti jika live server
+// URL API CoinGecko (atau get_coins.php lokal)
+$apiUrl = "http://localhost/ArtaCrypto_Web/get_coins.php"; // sesuaikan jika di live server
 
-// Coba fetch data maksimal 3 kali kalau gagal
 $maxRetries = 3;
 $retry = 0;
 $coinsData = false;
@@ -27,7 +26,7 @@ while ($retry < $maxRetries && !$coinsData) {
         if ($coinsData) break;
     }
     logMessage("Fetch attempt $retry failed.");
-    sleep(2); // jeda sebelum retry
+    sleep(2);
 }
 
 if (!$coinsData) {
@@ -66,4 +65,4 @@ foreach ($coinsData as $c) {
 }
 
 logMessage("Synced $count coins successfully.");
-echo "Sync completed: $count coins.";
+echo "Sync completed: $count coins.\n";
