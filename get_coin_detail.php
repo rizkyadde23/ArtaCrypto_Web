@@ -1,5 +1,5 @@
 <?php
-$apiKey = "YOUR_API_KEY";
+$apiKey = "https://api.coingecko.com/api/v3/coins/";
 
 $coinId = isset($_GET['id']) ? preg_replace('/[^a-z0-9\\-]/i', '', $_GET['id']) : 'bitcoin';
 $url = "https://api.coingecko.com/api/v3/coins/$coinId?";
