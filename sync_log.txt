@@ -1,0 +1,60 @@
+[2025-11-23 09:20:01] Fetch attempt 1 failed.
+[2025-11-23 09:20:03] Fetch attempt 2 failed.
+[2025-11-23 09:20:05] Fetch attempt 3 failed.
+[2025-11-23 09:20:07] ERROR: Failed to fetch coins data after 3 attempts.
+[2025-11-23 09:21:24] Fetch attempt 1 failed.
+[2025-11-23 09:21:26] Fetch attempt 2 failed.
+[2025-11-23 09:21:28] Fetch attempt 3 failed.
+[2025-11-23 09:21:30] ERROR: Failed to fetch coins data after 3 attempts.
+[2025-11-23 09:25:01] Fetch attempt 1 failed.
+[2025-11-23 09:25:03] Fetch attempt 2 failed.
+[2025-11-23 09:25:05] Fetch attempt 3 failed.
+[2025-11-23 09:25:07] ERROR: Failed to fetch coins data after 3 attempts.
+[2025-11-23 09:29:47] Fetch attempt 1 failed.
+[2025-11-23 09:29:49] Fetch attempt 2 failed.
+[2025-11-23 09:29:51] Fetch attempt 3 failed.
+[2025-11-23 09:29:53] ERROR: Failed to fetch coins data after 3 attempts.
+[2025-11-23 09:30:01] Fetch attempt 1 failed.
+[2025-11-23 09:30:03] Fetch attempt 2 failed.
+[2025-11-23 09:30:05] Fetch attempt 3 failed.
+[2025-11-23 09:30:07] ERROR: Failed to fetch coins data after 3 attempts.
+[2025-11-23 09:35:01] Fetch attempt 1 failed.
+[2025-11-23 09:35:03] Fetch attempt 2 failed.
+[2025-11-23 09:35:05] Fetch attempt 3 failed.
+[2025-11-23 09:35:07] ERROR: Failed to fetch coins data after 3 attempts.
+[2025-11-23 09:40:01] Fetch attempt 1 failed.
+[2025-11-23 09:40:03] Fetch attempt 2 failed.
+[2025-11-23 09:40:05] Fetch attempt 3 failed.
+[2025-11-23 09:40:07] ERROR: Failed to fetch coins data after 3 attempts.
+[2025-11-23 09:45:02] Fetch attempt 1 failed.
+[2025-11-23 09:45:04] Fetch attempt 2 failed.
+[2025-11-23 09:45:06] Fetch attempt 3 failed.
+[2025-11-23 09:45:08] ERROR: Failed to fetch coins data after 3 attempts.
+[2025-11-23 09:50:01] Fetch attempt 1 failed.
+[2025-11-23 09:50:03] Fetch attempt 2 failed.
+[2025-11-23 09:50:05] Fetch attempt 3 failed.
+[2025-11-23 09:50:07] ERROR: Failed to fetch coins data after 3 attempts.
+[2025-11-23 09:55:01] Fetch attempt 1 failed.
+[2025-11-23 09:55:03] Fetch attempt 2 failed.
+[2025-11-23 09:55:05] Fetch attempt 3 failed.
+[2025-11-23 09:55:07] ERROR: Failed to fetch coins data after 3 attempts.
+[2025-11-23 10:00:01] Fetch attempt 1 failed.
+[2025-11-23 10:00:03] Fetch attempt 2 failed.
+[2025-11-23 10:00:05] Fetch attempt 3 failed.
+[2025-11-23 10:00:07] ERROR: Failed to fetch coins data after 3 attempts.
+[2025-11-23 10:02:23] Fetch attempt 1 failed.
+[2025-11-23 10:02:25] Fetch attempt 2 failed.
+[2025-11-23 10:02:27] Fetch attempt 3 failed.
+[2025-11-23 10:02:29] ERROR: Failed to fetch coins data after 3 attempts.
+[2025-11-23 10:05:01] Fetch attempt 1 failed.
+[2025-11-23 10:05:03] Fetch attempt 2 failed.
+[2025-11-23 10:05:05] Fetch attempt 3 failed.
+[2025-11-23 10:05:07] ERROR: Failed to fetch coins data after 3 attempts.
+[2025-11-23 10:10:01] Fetch attempt 1 failed.
+[2025-11-23 10:10:03] Fetch attempt 2 failed.
+[2025-11-23 10:10:05] Fetch attempt 3 failed.
+[2025-11-23 10:10:07] ERROR: Failed to fetch coins data after 3 attempts.
+[2025-11-23 10:10:50] Fetch attempt 1 failed.
+[2025-11-23 10:10:52] Fetch attempt 2 failed.
+[2025-11-23 10:10:54] Fetch attempt 3 failed.
+[2025-11-23 10:10:56] ERROR: Failed to fetch coins data after 3 attempts.
