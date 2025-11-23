@@ -1,5 +1,6 @@
 <?php
-$host = "localhost";
+$host = (PHP_OS_FAMILY === 'Windows') ? '127.0.0.1' : '127.0.0.1';
+$user = "root";
 $user = "root";
 $pass = "";
 $db = "artacrypto";
