@@ -9,6 +9,7 @@ if (!isset($_SESSION['user'])) {
     exit;
 }
 $user = $_SESSION['user'];
+$balance_demo = (float)$user['balance_demo'];
 $uid = (int)$user['id'];
 
 // ---------- HANDLE ACTIONS (add_watchlist, remove_watchlist, transact) ----------
@@ -48,22 +49,129 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
 
     if ($action === 'transact' && isset($_POST['coin_id'], $_POST['type'], $_POST['amount'], $_POST['price'])) {
-        $coin_id = $_POST['coin_id'];
-        $type = ($_POST['type'] === 'sell') ? 'sell' : 'buy';
-        $amount = (float)$_POST['amount'];
-        $price = (float)$_POST['price'];
+    $coin_id = $_POST['coin_id'];
+    $type = ($_POST['type'] === 'sell') ? 'sell' : 'buy';
+    $amount = (float)$_POST['amount'];
+    $price = (float)$_POST['price'];
 
-        if ($amount <= 0 || $price <= 0) {
-            $flash = "Jumlah dan harga harus > 0.";
+    if ($amount <= 0 || $price <= 0) {
+        $flash = "Jumlah dan harga harus lebih besar dari 0.";
+    } else {
+
+        $total = round($amount * $price, 8);
+
+        // mulai transaksi SQL
+        $conn->begin_transaction();
+
+        // Lock saldo user
+        $qbal = "SELECT balance_demo FROM users WHERE id = ? FOR UPDATE";
+        $sbal = $conn->prepare($qbal);
+        $sbal->bind_param("i", $uid);
+        $sbal->execute();
+        $resBal = $sbal->get_result();
+        $rowBal = $resBal->fetch_assoc();
+        $sbal->close();
+
+        if (!$rowBal) {
+            $conn->rollback();
+            $flash = "Akun tidak ditemukan.";
         } else {
-            $ins = "INSERT INTO transactions (user_id, coin_id, type, amount, price) VALUES (?, ?, ?, ?, ?)";
-            $si = $conn->prepare($ins);
-            $si->bind_param("issdd", $uid, $coin_id, $type, $amount, $price);
-            if ($si->execute()) $flash = "Transaksi tercatat.";
-            else $flash = "Gagal mencatat transaksi.";
-            $si->close();
+
+            $balance = (float)$rowBal['balance_demo'];
+
+            if ($type === 'buy') {
+
+                // ❗ CEK SALDO
+                if ($balance < $total) {
+                    $conn->rollback();
+                    $flash = "Saldo tidak cukup untuk membeli. Saldo: $" . number_format($balance,2);
+                } else {
+                    // INSERT TRANSAKSI
+                    $ins = "INSERT INTO transactions (user_id, coin_id, type, amount, price)
+                            VALUES (?, ?, 'buy', ?, ?)";
+                    $st = $conn->prepare($ins);
+                    $st->bind_param("isdd", $uid, $coin_id, $amount, $price);
+                    $ok1 = $st->execute();
+                    $st->close();
+
+                    // KURANGI SALDO
+                    $upd = "UPDATE users SET balance_demo = balance_demo - ? WHERE id = ?";
+                    $su = $conn->prepare($upd);
+                    $su->bind_param("di", $total, $uid);
+                    $ok2 = $su->execute();
+                    $su->close();
+
+                    if ($ok1 && $ok2) {
+                        $conn->commit();
+                        $flash = "Berhasil BUY sebesar $" . number_format($total,2);
+                    } else {
+                        $conn->rollback();
+                        $flash = "Gagal memproses transaksi BUY.";
+                    }
+                }
+
+            } else { 
+                // ---------------------------
+                //          SELL SECTION
+                // ---------------------------
+
+                // ❗ CEK HOLDINGS USER
+                $qh = "
+                    SELECT COALESCE(
+                        SUM(CASE WHEN type='buy' THEN amount WHEN type='sell' THEN -amount END),0
+                    ) AS hold
+                    FROM transactions
+                    WHERE user_id = ? AND coin_id = ?
+                    FOR UPDATE
+                ";
+                $sh = $conn->prepare($qh);
+                $sh->bind_param("is", $uid, $coin_id);
+                $sh->execute();
+                $resH = $sh->get_result();
+                $rowH = $resH->fetch_assoc();
+                $sh->close();
+
+                $holdings = (float)$rowH['hold'];
+
+                if ($holdings < $amount) {
+                    $conn->rollback();
+                    $flash = "Holdings coin tidak cukup untuk SELL. Kamu punya: " . $holdings;
+                } else {
+
+                    // INSERT sell
+                    $ins = "INSERT INTO transactions (user_id, coin_id, type, amount, price)
+                            VALUES (?, ?, 'sell', ?, ?)";
+                    $st = $conn->prepare($ins);
+                    $st->bind_param("isdd", $uid, $coin_id, $amount, $price);
+                    $ok1 = $st->execute();
+                    $st->close();
+
+                    // TAMBAHKAN saldo
+                    $upd = "UPDATE users SET balance_demo = balance_demo + ? WHERE id = ?";
+                    $su = $conn->prepare($upd);
+                    $su->bind_param("di", $total, $uid);
+                    $ok2 = $su->execute();
+                    $su->close();
+
+                    if ($ok1 && $ok2) {
+                        $conn->commit();
+                        $flash = "Berhasil SELL, saldo bertambah $" . number_format($total,2);
+                    } else {
+                        $conn->rollback();
+                        $flash = "Gagal memproses transaksi SELL.";
+                    }
+                }
+            }
         }
     }
+
+
+    $_SESSION['flash'] = $flash;
+    header("Location: dashboard.php");
+    exit;
+}
+
+
     // redirect untuk mencegah resubmit form
     $_SESSION['flash'] = $flash;
     header("Location: dashboard.php");
@@ -131,25 +239,58 @@ WHERE t.user_id = ?
 GROUP BY t.coin_id
 HAVING holdings_amount <> 0
 ";
+// if ($stmt = $conn->prepare($qport)) {
+//     $stmt->bind_param("i", $uid);
+//     $stmt->execute();
+//     $res = $stmt->get_result();
+//     $total_portfolio_value = 0.0;
+//     $total_cost_basis = 0.0;
+//     while ($row = $res->fetch_assoc()) {
+//         $row['current_price'] = (float)$row['current_price'];
+//         $row['holdings_amount'] = (float)$row['holdings_amount'];
+//         $row['value'] = $row['current_price'] * $row['holdings_amount'];
+//         $total_portfolio_value += $row['value'];
+//         $total_cost_basis += (float)$row['cost_basis'];
+//         $portfolio[] = $row;
+//     }
+//     $stmt->close();
+// } else {
+//     $total_portfolio_value = 0.0;
+//     $total_cost_basis = 0.0;
+// }
+
 if ($stmt = $conn->prepare($qport)) {
     $stmt->bind_param("i", $uid);
     $stmt->execute();
     $res = $stmt->get_result();
+
     $total_portfolio_value = 0.0;
     $total_cost_basis = 0.0;
+    $portfolio = [];
+
     while ($row = $res->fetch_assoc()) {
         $row['current_price'] = (float)$row['current_price'];
         $row['holdings_amount'] = (float)$row['holdings_amount'];
+
+        // nilai crypto
         $row['value'] = $row['current_price'] * $row['holdings_amount'];
+
         $total_portfolio_value += $row['value'];
         $total_cost_basis += (float)$row['cost_basis'];
+
         $portfolio[] = $row;
     }
+
     $stmt->close();
 } else {
     $total_portfolio_value = 0.0;
     $total_cost_basis = 0.0;
 }
+
+// ===== Tambahkan nilai cash (balance_demo) =====
+$balance_demo = (float)$user['balance_demo'];
+$net_worth = $total_portfolio_value + $balance_demo; 
+
 
 ?>
 <!doctype html>
@@ -275,30 +416,39 @@ if ($stmt = $conn->prepare($qport)) {
 
     <!-- HERO / SUMMARY -->
     <div class="row g-3 align-items-center container-hero">
-        <div class="col-md-6">
-            <h2 class="mb-1">Halo, <?= htmlspecialchars($user['username']) ?></h2>
-            <p class="small-muted">Dashboard ArtaCrypto — belajar & simulasi dengan uang demo.</p>
-        </div>
+    <div class="col-md-6">
+        <h2 class="mb-1">Halo, <?= htmlspecialchars($user['username']) ?></h2>
+        <p class="small-muted">Dashboard ArtaCrypto — belajar & simulasi dengan uang demo.</p>
+    </div>
 
-        <div class="col-md-6">
-            <div class="row g-3">
-                <div class="col-6">
-                    <div class="summary-card text-center">
-                        <div class="small-muted">Total Portfolio Value</div>
-                        <div class="summary-value">$<?= number_format($total_portfolio_value, 2, '.', ',') ?></div>
-                        <div class="small-muted">Total Cost Basis: $<?= number_format($total_cost_basis, 2, '.', ',') ?></div>
-                    </div>
-                </div>
-                <div class="col-6">
-                    <div class="summary-card text-center">
-                        <div class="small-muted">Watchlist</div>
-                        <div class="summary-value"><?= count($watchlist) ?> coins</div>
-                        <div class="small-muted">Transactions: <?= count($transactions) ?></div>
-                    </div>
+    <div class="col-md-6">
+        <div class="row g-3">
+
+            <!-- Summary Card Dibuat Lebih Lengkap -->
+            <div class="col-6">
+                <div class="summary-card text-center">
+                    <div class="small-muted">Net Worth (Crypto + Cash)</div>
+                    <div class="summary-value">$<?= number_format($net_worth, 2, '.', ',') ?></div>
+
+                    <div class="small-muted mt-2">Crypto Holdings: $<?= number_format($total_portfolio_value, 2, '.', ',') ?></div>
+                    <div class="small-muted">Demo Balance: $<?= number_format($balance_demo, 2, '.', ',') ?></div>
+                    <div class="small-muted">Cost Basis: $<?= number_format($total_cost_basis, 2, '.', ',') ?></div>
                 </div>
             </div>
+
+            <!-- Watchlist card -->
+            <div class="col-6">
+                <div class="summary-card text-center">
+                    <div class="small-muted">Watchlist</div>
+                    <div class="summary-value"><?= count($watchlist) ?> coins</div>
+                    <div class="small-muted">Transactions: <?= count($transactions) ?></div>
+                </div>
+            </div>
+
         </div>
     </div>
+</div>
+
 
     <!-- MAIN GRID -->
     <div class="row g-4 mt-1">

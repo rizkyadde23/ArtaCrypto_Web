@@ -7,9 +7,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
-    $query = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+    $query = "INSERT INTO users (username, email, password, balance_demo) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("sss", $username, $email, $password);
+    $initial_balance = 10000.0; 
+    $stmt->bind_param("sssd", $username, $email, $password, $initial_balance);
+
 
     if ($stmt->execute()) {
         $_SESSION['success'] = "Registrasi berhasil! Silakan login.";
