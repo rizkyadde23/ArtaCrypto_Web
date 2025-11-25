@@ -96,16 +96,6 @@ class TransactionController
         $u->execute();
 
         $this->db->commit();
-        
-        // setelah commit() / update saldo
-        // Refresh user data setelah saldo berubah
-        $q = $this->db->prepare("SELECT * FROM users WHERE id = ?");
-        $q->bind_param("i", $user_id);
-        $q->execute();
-        $newUser = $q->get_result()->fetch_assoc();
-
-        // Update session
-        $_SESSION['user'] = $newUser;
     }
 }
 ?>

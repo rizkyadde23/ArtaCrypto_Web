@@ -628,7 +628,7 @@ $net_worth = $total_portfolio_value + $balance_demo;
                     <div class="text-center small-muted py-4">(Belum ada transaksi)</div>
                     <?php else: ?>
                     <div style="max-height:420px; overflow:auto;">
-                        <table class="table table-borderless table-sm text-light mb-0">
+                        <table class="table table-dark table-sm text-light mb-0">
                             <thead>
                                 <tr class="small-muted">
                                     <th>Time</th>

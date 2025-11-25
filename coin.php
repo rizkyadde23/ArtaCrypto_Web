@@ -5,16 +5,21 @@ $coinId = isset($_GET['id']) ? preg_replace('/[^a-z0-9\\-]/i', '', $_GET['id']) 
 ?>
 <!DOCTYPE html>
 <html lang="en">
-//halooo
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Coin Detail - <?= htmlspecialchars($coinId) ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+    body,
+    body * {
+        color: #ffffff !important;
+    }
+
     body {
         background: #0b0b0b;
-        color: #fff
+        color: #fff;
     }
 
     .card-detail {
@@ -30,8 +35,33 @@ $coinId = isset($_GET['id']) ? preg_replace('/[^a-z0-9\\-]/i', '', $_GET['id']) 
 </head>
 
 <body>
-    <nav class="navbar navbar-dark bg-dark">
-        <div class="container"><a class="navbar-brand" href="index.php">ArtaCrypto</a></div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+
+            <!-- KIRI -->
+            <a class="navbar-brand fw-bold" href="#">ArtaCrypto</a>
+
+            <!-- TOGGLER -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- KANAN -->
+            <div class="collapse navbar-collapse justify-content-end" id="nav">
+                <ul class="navbar-nav">
+                    <?php if(isset($_SESSION['user'])): ?>
+                    <li class="nav-item"><a class="nav-link" href="index.php">Market</a></li>
+                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
+                    <?php else: ?>
+                    <li class="nav-item"><a class="nav-link" href="index.php">Market</a></li>
+                    <li class="nav-item"><a class="nav-link" href="login.php">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="register.php">Register</a></li>
+                    <?php endif; ?>
+                </ul>
+            </div>
+
+        </div>
     </nav>
 
     <div class="container py-5">
@@ -60,7 +90,7 @@ $coinId = isset($_GET['id']) ? preg_replace('/[^a-z0-9\\-]/i', '', $_GET['id']) 
       <div class="d-flex align-items-center gap-3 mb-3">
         <img src="${coin.image.large}" width="64">
         <div>
-          <h3 class="mb-0">${coin.name} <small class="text-muted">(${coin.symbol.toUpperCase()})</small></h3>
+          <h3 class="mb-0">${coin.name} <small>(${coin.symbol.toUpperCase()})</small></h3>
           <small>Rank: ${coin.market_cap_rank}</small>
         </div>
       </div>

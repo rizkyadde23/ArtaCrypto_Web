@@ -1,5 +1,5 @@
 <?php
-$apiKey = "https://api.coingecko.com/api/v3/coins/";
+$apiKey = "YOUR_API_KEY";
 
 $url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd";
 
