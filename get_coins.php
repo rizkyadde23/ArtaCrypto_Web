@@ -21,3 +21,4 @@ if ($httpCode !== 200) {
 
 header("Content-Type: application/json");
 echo $response;
+?>

@@ -5,7 +5,7 @@ include 'connection.php';
 set_time_limit(60);
 
 // Ambil API data
-$data = @file_get_contents("http://localhost/artacrypto/get_coins.php");
+$data = @file_get_contents("http://localhost/praktikum%20web/Projek/get_coins.php");
 $coins = json_decode($data, true);
 
 if (!$coins) {
