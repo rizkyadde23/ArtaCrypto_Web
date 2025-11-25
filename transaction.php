@@ -193,6 +193,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['type'])) {
                     <?= rtrim(rtrim(number_format($holdings, 8, '.', ','),'0'),'.') ?>
                     <span class="small-muted">(<?= strtoupper($selectedCoin['symbol']) ?>)</span>
                 </h4>
+                <div class="small-muted">
+                    $<?= number_format($holdings * $selectedCoin['current_price'], 2, '.', ',') ?>
+                </div>
             </div>
 
             <!-- FORM TRANSAKSI -->
